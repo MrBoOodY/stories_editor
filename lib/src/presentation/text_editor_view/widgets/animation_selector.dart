@@ -2,10 +2,10 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:stories_editor/src/domain/providers/notifiers/control_provider.dart';
-import 'package:stories_editor/src/domain/providers/notifiers/text_editing_notifier.dart';
-import 'package:stories_editor/src/presentation/utils/constants/app_enums.dart';
-import 'package:stories_editor/src/presentation/widgets/animated_onTap_button.dart';
+import 'package:reels_editor/src/domain/providers/notifiers/control_provider.dart';
+import 'package:reels_editor/src/domain/providers/notifiers/text_editing_notifier.dart';
+import 'package:reels_editor/src/presentation/utils/constants/app_enums.dart';
+import 'package:reels_editor/src/presentation/widgets/animated_onTap_button.dart';
 
 class AnimationSelector extends StatelessWidget {
   const AnimationSelector({Key? key}) : super(key: key);
@@ -52,7 +52,7 @@ class AnimationSelector extends StatelessWidget {
                                 .fontList![editorNotifier.fontFamilyIndex],
                             package: controlNotifier.isCustomFontList
                                 ? null
-                                : 'stories_editor')
+                                : 'reels_editor')
                         .copyWith(
                             color: index == editorNotifier.fontAnimationIndex
                                 ? Colors.red

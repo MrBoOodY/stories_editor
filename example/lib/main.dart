@@ -1,6 +1,11 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_pickers/image_pickers.dart';
+import 'package:reels_editor/reels_editor.dart';
+import 'package:reels_editor/src/presentation/utils/constants/app_enums.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:stories_editor/stories_editor.dart';
 
 void main() {
   runApp(const MyApp());
@@ -32,27 +37,33 @@ class _ExampleState extends State<Example> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.black,
-        resizeToAvoidBottomInset: false,
-        body: Center(
-          child: ElevatedButton(
-            onPressed: () {
+      backgroundColor: Colors.black,
+      resizeToAvoidBottomInset: false,
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () async {
+            final List<Media> _listVideoPaths = await ImagePickers.pickerPaths(
+              galleryMode: GalleryMode.video,
+              selectCount: 1,
+            );
+            if (_listVideoPaths.isNotEmpty) {
               Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => StoriesEditor(
                             giphyKey: 'C4dMA7Q19nqEGdpfj82T8ssbOeZIylD4',
-                            //fontFamilyList: const ['Shizuru', 'Aladin'],
-                            galleryThumbnailQuality: 300,
-                            //isCustomFontList: true,
+                            editorType: EditorType.video,
+                            file: File(_listVideoPaths.first.path ?? ''),
                             onDone: (uri) {
-                              debugPrint(uri);
+                              log(uri);
                               Share.shareFiles([uri]);
                             },
                           )));
-            },
-            child: const Text('Open Stories Editor'),
-          ),
-        ));
+            }
+          },
+          child: const Text('Open Stories Editor'),
+        ),
+      ),
+    );
   }
 }

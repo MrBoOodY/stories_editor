@@ -1,9 +1,9 @@
+import 'dart:async';
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'dart:async';
-
-import 'package:stories_editor/src/presentation/utils/color_detection.dart';
+import 'package:reels_editor/src/presentation/utils/color_detection.dart';
 
 class FileImageBG extends StatefulWidget {
   final File? filePath;

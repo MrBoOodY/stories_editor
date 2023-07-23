@@ -12,3 +12,5 @@ enum TextAnimationType {
   wavy,
   flicker
 }
+
+enum EditorType { image, text, video }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:stories_editor/src/presentation/utils/constants/app_colors.dart';
-import 'package:stories_editor/src/presentation/utils/constants/font_family.dart';
+import 'package:reels_editor/src/presentation/utils/constants/app_colors.dart';
+import 'package:reels_editor/src/presentation/utils/constants/app_enums.dart';
+import 'package:reels_editor/src/presentation/utils/constants/font_family.dart';
 
 class ControlNotifier extends ChangeNotifier {
   String _giphyKey = '';
@@ -9,6 +10,24 @@ class ControlNotifier extends ChangeNotifier {
   String get giphyKey => _giphyKey;
   set giphyKey(String key) {
     _giphyKey = key;
+    notifyListeners();
+  }
+
+  EditorType _editorType = EditorType.video;
+
+  /// is required add editor type
+  EditorType get editorType => _editorType;
+  set editorType(EditorType key) {
+    _editorType = key;
+    notifyListeners();
+  }
+
+  int _filterIndex = 0;
+
+  /// current filter index
+  int get filterIndex => _filterIndex;
+  set filterIndex(int index) {
+    _filterIndex = index;
     notifyListeners();
   }
 
@@ -33,6 +52,56 @@ class ControlNotifier extends ChangeNotifier {
   set isTextEditing(bool val) {
     /// set bool if is text editing
     _isTextEditing = val;
+    notifyListeners();
+  }
+
+  bool _isTrimming = false;
+
+  /// is editor trimming
+  bool get isTrimming => _isTrimming;
+
+  set isTrimming(bool val) {
+    _isTrimming = val;
+    notifyListeners();
+  }
+
+  double _trimStart = 0.0;
+
+  /// get trim start position
+  double get trimStart => _trimStart;
+
+  /// set trim start position
+  set trimStart(double val) {
+    _trimStart = val;
+    notifyListeners();
+  }
+
+  double _trimEnd = 40.0;
+
+  /// get trim end position
+  double get trimEnd => _trimEnd;
+
+  /// set trim end position
+  set trimEnd(double val) {
+    _trimEnd = val;
+    notifyListeners();
+  }
+
+  bool _isEffecting = false;
+
+  /// is effect options opened
+  bool get isEffecting => _isEffecting;
+  set isEffecting(bool isEffecting) {
+    _isEffecting = isEffecting;
+    notifyListeners();
+  }
+
+  bool _isManagingAudio = false;
+
+  /// is audio options opened
+  bool get isManagingAudio => _isManagingAudio;
+  set isManagingAudio(bool isManagingAudio) {
+    _isManagingAudio = isManagingAudio;
     notifyListeners();
   }
 
