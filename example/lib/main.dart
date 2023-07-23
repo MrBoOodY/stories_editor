@@ -1,8 +1,8 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:image_pickers/image_pickers.dart';
 import 'package:reels_editor/reels_editor.dart';
 import 'package:reels_editor/src/presentation/utils/constants/app_enums.dart';
 import 'package:share_plus/share_plus.dart';
@@ -42,18 +42,17 @@ class _ExampleState extends State<Example> {
       body: Center(
         child: ElevatedButton(
           onPressed: () async {
-            final List<Media> _listVideoPaths = await ImagePickers.pickerPaths(
-              galleryMode: GalleryMode.video,
-              selectCount: 1,
-            );
-            if (_listVideoPaths.isNotEmpty) {
+            FilePickerResult? result = await FilePicker.platform
+                .pickFiles(allowMultiple: false, type: FileType.video);
+
+            if (result?.files.single.path != null) {
               Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => StoriesEditor(
                             giphyKey: 'C4dMA7Q19nqEGdpfj82T8ssbOeZIylD4',
                             editorType: EditorType.video,
-                            file: File(_listVideoPaths.first.path ?? ''),
+                            file: File(result!.files.single.path!),
                             onDone: (uri) {
                               log(uri);
                               Share.shareFiles([uri]);

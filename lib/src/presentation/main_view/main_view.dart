@@ -132,9 +132,9 @@ class _MainViewState extends State<MainView> {
         widget.file!,
         minDuration: const Duration(seconds: 1),
         maxDuration: const Duration(seconds: 40),
-      )..initialize(aspectRatio: 9 / 16)
-            /* ..video.play() */ .then((_) => setState(() {}))
-            .catchError((error) {
+      )
+        ..initialize(aspectRatio: 9 / 16)
+        ..video.play().then((_) => setState(() {})).catchError((error) {
           log(error.toString());
           // handle minimum duration bigger than video duration error
           Navigator.pop(context);
@@ -526,7 +526,14 @@ class _MainViewState extends State<MainView> {
                                 ),
                                 onPressed: () {
                                   controlNotifier.isManagingAudio = false;
-                                  audioProvider.cancelEditing();
+                                  audioProvider.cancelEditing(
+                                    currentPosition: Duration(
+                                      seconds: _videoEditorController
+                                              .endTrim.inSeconds -
+                                          _videoEditorController
+                                              .videoPosition.inSeconds,
+                                    ),
+                                  );
                                 },
                                 child: const Text(
                                   'Cancel',
@@ -545,6 +552,8 @@ class _MainViewState extends State<MainView> {
                                 onPressed: () {
                                   controlNotifier.isManagingAudio = false;
                                   audioProvider.submit();
+                                  _videoEditorController.video.setVolume(
+                                      audioProvider.actualAudioVolume);
                                 },
                                 child: const Text(
                                   'Done',
@@ -590,6 +599,8 @@ class _MainViewState extends State<MainView> {
                                                     0.0
                                                 ? 0.0
                                                 : 1.0;
+                                        _videoEditorController.video.setVolume(
+                                            audioProvider.virtualVideoVolume);
                                       },
                                       padding: EdgeInsets.zero,
                                       icon: CircleAvatar(
@@ -610,6 +621,8 @@ class _MainViewState extends State<MainView> {
                                         onChanged: (value) {
                                           audioProvider.virtualVideoVolume =
                                               value;
+                                          _videoEditorController.video
+                                              .setVolume(value);
                                         },
                                       ),
                                     ),
@@ -620,6 +633,8 @@ class _MainViewState extends State<MainView> {
                                                     0.0
                                                 ? 0.0
                                                 : 1.0;
+                                        _videoEditorController.video.setVolume(
+                                            audioProvider.virtualVideoVolume);
                                       },
                                       child: Text(
                                           audioProvider.virtualVideoVolume !=
@@ -630,9 +645,7 @@ class _MainViewState extends State<MainView> {
                                   ],
                                 ),
                                 const SizedBox(height: 20),
-                                if (audioProvider.virtualSelectedAudio !=
-                                        null ||
-                                    audioProvider.actualSelectedAudio != null)
+                                if (audioProvider.virtualSelectedAudio != null)
 
                                   ///Audio volume Slider
                                   Column(
@@ -704,7 +717,20 @@ class _MainViewState extends State<MainView> {
                                         55,
                                       ),
                                     ),
-                                    onPressed: audioProvider.pickAudio,
+                                    onPressed: () async {
+                                      final success =
+                                          await audioProvider.pickAudio(
+                                        currentPosition:
+                                            _videoEditorController.endTrim,
+                                        maxDuration: _videoEditorController
+                                                .endTrim.inSeconds -
+                                            _videoEditorController
+                                                .startTrim.inSeconds,
+                                      );
+                                      if (success) {
+                                        controlNotifier.isManagingAudio = false;
+                                      }
+                                    },
                                     icon: const Icon(
                                       Icons.music_note_rounded,
                                       color: Colors.white,

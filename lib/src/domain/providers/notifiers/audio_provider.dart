@@ -1,9 +1,12 @@
 import 'dart:developer';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 class AudioNotifier extends ChangeNotifier {
+  final player = AudioPlayer();
+
   double _actualVideoVolume = 1.0;
 
   /// actual video volume
@@ -37,6 +40,7 @@ class AudioNotifier extends ChangeNotifier {
   double get virtualAudioVolume => _virtualAudioVolume;
   set virtualAudioVolume(double virtualAudioVolume) {
     _virtualAudioVolume = virtualAudioVolume;
+    player.setVolume(virtualAudioVolume);
     notifyListeners();
   }
 
@@ -52,14 +56,17 @@ class AudioNotifier extends ChangeNotifier {
   String? _virtualSelectedAudio;
 
   /// selected audio volume
-  String? get virtualSelectedAudio =>
-      _virtualSelectedAudio ?? _actualSelectedAudio;
+  String? get virtualSelectedAudio => _virtualSelectedAudio;
   set virtualSelectedAudio(String? value) {
     _virtualSelectedAudio = value;
+    if (value == null) {
+      player.pause();
+    }
     notifyListeners();
   }
 
-  pickAudio() async {
+  Future<bool> pickAudio(
+      {required int maxDuration, required Duration currentPosition}) async {
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         allowMultiple: false,
@@ -67,22 +74,47 @@ class AudioNotifier extends ChangeNotifier {
       );
       if (result?.paths.isNotEmpty ?? false) {
         virtualSelectedAudio = result!.files.first.path;
-        notifyListeners();
+        submit();
+        _playAudio(maxDuration, currentPosition);
+        return true;
       }
     } catch (e) {
       log(e.toString());
     }
+    return false;
   }
 
-  cancelEditing() {
+  cancelEditing({required Duration currentPosition}) {
     virtualAudioVolume = actualAudioVolume;
     virtualVideoVolume = actualVideoVolume;
     virtualSelectedAudio = actualSelectedAudio;
+    if (actualSelectedAudio != null) {
+      player.resume();
+      player.seek(currentPosition);
+    }
   }
 
   submit() {
     actualAudioVolume = virtualAudioVolume;
     actualVideoVolume = virtualVideoVolume;
     actualSelectedAudio = virtualSelectedAudio;
+    if (actualSelectedAudio == null) {
+      player.dispose();
+    }
+  }
+
+  _playAudio(int maxDuration, Duration currentPosition) async {
+    if (actualSelectedAudio != null) {
+      await player.play(
+        DeviceFileSource(actualSelectedAudio!),
+        position: currentPosition,
+      );
+      player.setReleaseMode(ReleaseMode.loop);
+      player.onDurationChanged.listen((event) {
+        if (event.inSeconds >= maxDuration) {
+          player.seek(Duration.zero);
+        }
+      });
+    }
   }
 }
