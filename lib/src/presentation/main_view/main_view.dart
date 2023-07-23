@@ -143,13 +143,6 @@ class _MainViewState extends State<MainView> {
   }
 
   @override
-  void dispose() {
-    _videoEditorController.dispose();
-    _videoEditorController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final ScreenUtil screenUtil = ScreenUtil();
     return WillPopScope(
@@ -330,6 +323,11 @@ class _MainViewState extends State<MainView> {
                                         context: context,
                                         contentKey: contentKey);
                                     if (res) {
+                                      await _videoEditorController.dispose();
+                                      await Provider.of<AudioNotifier>(context,
+                                              listen: false)
+                                          .player
+                                          .dispose();
                                       Navigator.pop(context);
                                     }
                                   }),
@@ -795,8 +793,15 @@ class _MainViewState extends State<MainView> {
 
     /// show close dialog
     else if (!controlNotifier.isTextEditing && !controlNotifier.isPainting) {
-      return widget.onBackPress ??
-          exitDialog(context: context, contentKey: contentKey);
+      final isYes = await (widget.onBackPress ??
+          exitDialog(context: context, contentKey: contentKey));
+      if (isYes) {
+        await _videoEditorController.dispose();
+        await Provider.of<AudioNotifier>(context, listen: false)
+            .player
+            .dispose();
+      }
+      return isYes;
     }
     return false;
   }
