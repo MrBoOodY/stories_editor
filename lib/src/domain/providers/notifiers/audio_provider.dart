@@ -3,9 +3,12 @@ import 'dart:developer';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:record/record.dart';
 
 class AudioNotifier extends ChangeNotifier {
   final player = AudioPlayer();
+  final record = Record();
 
   double _actualVideoVolume = 1.0;
 
@@ -99,7 +102,7 @@ class AudioNotifier extends ChangeNotifier {
     actualVideoVolume = virtualVideoVolume;
     actualSelectedAudio = virtualSelectedAudio;
     if (actualSelectedAudio == null) {
-      player.dispose();
+      player.pause();
     }
   }
 
@@ -116,5 +119,66 @@ class AudioNotifier extends ChangeNotifier {
         }
       });
     }
+  }
+
+  playRecordedAudio(
+      {required int maxDuration, required Duration currentPosition}) async {
+    if (virtualSelectedAudio != null) {
+      await player.play(
+        DeviceFileSource(virtualSelectedAudio!),
+        position: currentPosition,
+      );
+      player.setReleaseMode(ReleaseMode.loop);
+      player.onDurationChanged.listen((event) {
+        if (event.inSeconds >= maxDuration) {
+          player.seek(Duration.zero);
+        }
+      });
+    }
+  }
+
+  bool _preparingRecording = false;
+
+  /// is recording sheet opened
+  bool get preparingRecording => _preparingRecording;
+  set preparingRecording(bool preparingRecording) {
+    _preparingRecording = preparingRecording;
+    notifyListeners();
+  }
+
+  toggleRecording() async {
+    if (await record.isPaused()) {
+      await record.resume();
+    } else if (!await record.isRecording()) {
+      _startRecording();
+    } else {
+      await record.stop();
+    }
+    notifyListeners();
+  }
+
+  _startRecording() async {
+    // Check and request permission
+    if (await record.hasPermission()) {
+      virtualSelectedAudio =
+          (await getTemporaryDirectory()).path + UniqueKey().toString();
+      // Start recording
+      await record.start(
+        path: virtualSelectedAudio,
+        encoder: AudioEncoder.aacLc, // by default
+        bitRate: 128000, // by default
+      );
+    }
+  }
+
+  pauseRecording() async {
+    await record.pause();
+    notifyListeners();
+  }
+
+  deleteRecord() async {
+    await record.stop();
+    virtualSelectedAudio = null;
+    notifyListeners();
   }
 }

@@ -57,5 +57,7 @@
 	<string>Explain why your app uses music</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Explain why your app uses photo library</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>We need to access to the microphone to record audio file</string>
 </dict>
 </plist>

@@ -211,7 +211,8 @@ class _MainViewState extends State<MainView> {
                                         width: double.infinity,
                                       ),
                                       backgroundDecoration: const BoxDecoration(
-                                          color: Colors.transparent),
+                                        color: Colors.transparent,
+                                      ),
                                     ),
 
                                     Consumer<DraggableWidgetNotifier>(builder:
@@ -323,11 +324,7 @@ class _MainViewState extends State<MainView> {
                                         context: context,
                                         contentKey: contentKey);
                                     if (res) {
-                                      await _videoEditorController.dispose();
-                                      await Provider.of<AudioNotifier>(context,
-                                              listen: false)
-                                          .player
-                                          .dispose();
+                                      disposeControllers();
                                       Navigator.pop(context);
                                     }
                                   }),
@@ -551,7 +548,7 @@ class _MainViewState extends State<MainView> {
                                   controlNotifier.isManagingAudio = false;
                                   audioProvider.submit();
                                   _videoEditorController.video.setVolume(
-                                      audioProvider.actualAudioVolume);
+                                      audioProvider.actualVideoVolume);
                                 },
                                 child: const Text(
                                   'Done',
@@ -563,181 +560,370 @@ class _MainViewState extends State<MainView> {
                               ),
                             ],
                           ),
-                          Container(
+                          DecoratedBox(
                             decoration: BoxDecoration(
                               color: Colors.grey[800],
                               borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(10),
+                                top: Radius.circular(20),
                               ),
                             ),
-                            padding: const EdgeInsets.all(24),
-                            child: Column(
-                              children: [
-                                const Text(
-                                  'Mix you audio',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 20,
+                            child: Padding(
+                              padding: const EdgeInsets.all(24),
+                              child: Column(
+                                children: [
+                                  const Text(
+                                    'Mix you audio',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 20,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 10),
-                                Divider(
-                                  height: 20,
-                                  color: Colors.grey[500],
-                                ),
-
-                                /// Video volume slider
-                                Row(
-                                  children: [
-                                    IconButton(
-                                      onPressed: () {
-                                        audioProvider.virtualVideoVolume =
-                                            audioProvider.virtualVideoVolume !=
-                                                    0.0
-                                                ? 0.0
-                                                : 1.0;
-                                        _videoEditorController.video.setVolume(
-                                            audioProvider.virtualVideoVolume);
-                                      },
-                                      padding: EdgeInsets.zero,
-                                      icon: CircleAvatar(
-                                        radius: 40,
-                                        backgroundColor: Colors.grey[600],
-                                        child: Icon(
-                                          audioProvider.virtualVideoVolume !=
-                                                  0.0
-                                              ? Icons.volume_up_rounded
-                                              : Icons.volume_off_rounded,
-                                          color: Colors.white,
+                                  const SizedBox(height: 10),
+                                  Divider(
+                                    height: 20,
+                                    color: Colors.grey[500],
+                                  ),
+                                  if (audioProvider.preparingRecording)
+                                    Stack(
+                                      children: [
+                                        Align(
+                                          alignment: Alignment.center,
+                                          child: GestureDetector(
+                                            onTap:
+                                                audioProvider.toggleRecording,
+                                            child: Container(
+                                              decoration: const BoxDecoration(
+                                                  color: Colors.white,
+                                                  shape: BoxShape.circle,
+                                                  gradient: SweepGradient(
+                                                      colors: [
+                                                        Colors.white70,
+                                                        Colors.white,
+                                                        Colors.white,
+                                                        Colors.white70
+                                                      ])),
+                                              padding: const EdgeInsets.all(8),
+                                              width: 150.w,
+                                              height: 150.w,
+                                              child: FutureBuilder<bool>(
+                                                  future: audioProvider.record
+                                                      .isPaused(),
+                                                  builder: (context, isPaused) {
+                                                    return FutureBuilder<bool>(
+                                                        future: audioProvider
+                                                            .record
+                                                            .isRecording(),
+                                                        builder: (context,
+                                                            isRecording) {
+                                                          if (isRecording
+                                                                  .hasData &&
+                                                              isPaused
+                                                                  .hasData) {
+                                                            return Icon(
+                                                              isRecording.data! &&
+                                                                      !isPaused
+                                                                          .data!
+                                                                  ? Icons.stop
+                                                                  : Icons
+                                                                      .mic_rounded,
+                                                              size: 35,
+                                                            );
+                                                          } else {
+                                                            return const CircularProgressIndicator
+                                                                .adaptive();
+                                                          }
+                                                        });
+                                                  }),
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Slider(
-                                        value: audioProvider.virtualVideoVolume,
-                                        onChanged: (value) {
-                                          audioProvider.virtualVideoVolume =
-                                              value;
-                                          _videoEditorController.video
-                                              .setVolume(value);
-                                        },
-                                      ),
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        audioProvider.virtualVideoVolume =
-                                            audioProvider.virtualVideoVolume !=
-                                                    0.0
-                                                ? 0.0
-                                                : 1.0;
-                                        _videoEditorController.video.setVolume(
-                                            audioProvider.virtualVideoVolume);
-                                      },
-                                      child: Text(
-                                          audioProvider.virtualVideoVolume !=
-                                                  0.0
-                                              ? 'Mute'
-                                              : 'Un Mute'),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 20),
-                                if (audioProvider.virtualSelectedAudio != null)
-
-                                  ///Audio volume Slider
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        'External Audio',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 18,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 10),
-                                      Row(
-                                        children: [
-                                          IconButton(
-                                            onPressed: () {
-                                              audioProvider.virtualAudioVolume =
-                                                  audioProvider
-                                                              .virtualAudioVolume !=
-                                                          0.0
-                                                      ? 0.0
-                                                      : 1.0;
+                                        Align(
+                                          alignment:
+                                              AlignmentDirectional.centerStart,
+                                          child: FutureBuilder<bool>(
+                                            future:
+                                                audioProvider.record.isPaused(),
+                                            builder: (context, isPaused) {
+                                              return FutureBuilder<bool>(
+                                                future: audioProvider.record
+                                                    .isRecording(),
+                                                builder:
+                                                    (context, isRecording) {
+                                                  if (isRecording.hasData &&
+                                                      isPaused.hasData) {
+                                                    if (!isRecording.data! &&
+                                                        !isPaused.data! &&
+                                                        audioProvider
+                                                                .virtualSelectedAudio !=
+                                                            null) {
+                                                      return TextButton(
+                                                        child:
+                                                            const Text('Save'),
+                                                        onPressed: () {
+                                                          audioProvider
+                                                                  .preparingRecording =
+                                                              false;
+                                                          audioProvider
+                                                              .playRecordedAudio(
+                                                            currentPosition:
+                                                                _videoEditorController
+                                                                    .endTrim,
+                                                            maxDuration: _videoEditorController
+                                                                    .endTrim
+                                                                    .inSeconds -
+                                                                _videoEditorController
+                                                                    .startTrim
+                                                                    .inSeconds,
+                                                          );
+                                                          audioProvider
+                                                              .submit();
+                                                        },
+                                                      );
+                                                    } else if (isRecording
+                                                            .data! &&
+                                                        !isPaused.data!) {
+                                                      return TextButton(
+                                                        child:
+                                                            const Text('Pause'),
+                                                        onPressed: () {
+                                                          audioProvider
+                                                              .pauseRecording();
+                                                        },
+                                                      );
+                                                    } else {
+                                                      return const SizedBox();
+                                                    }
+                                                  } else {
+                                                    return const SizedBox();
+                                                  }
+                                                },
+                                              );
                                             },
-                                            padding: EdgeInsets.zero,
-                                            icon: CircleAvatar(
-                                              radius: 40,
-                                              backgroundColor: Colors.grey[600],
-                                              child: Icon(
+                                          ),
+                                        ),
+                                        if (audioProvider
+                                                .virtualSelectedAudio !=
+                                            null)
+                                          Align(
+                                            alignment:
+                                                AlignmentDirectional.centerEnd,
+                                            child: TextButton(
+                                              child: const Text(
+                                                'Delete',
+                                              ),
+                                              onPressed:
+                                                  audioProvider.deleteRecord,
+                                            ),
+                                          ),
+                                      ],
+                                    )
+                                  else
+                                    Column(
+                                      children: [
+                                        /// Video volume slider
+                                        Row(
+                                          children: [
+                                            IconButton(
+                                              onPressed: () {
                                                 audioProvider
-                                                            .virtualAudioVolume !=
-                                                        0.0
-                                                    ? Icons.volume_up_rounded
-                                                    : Icons.volume_off_rounded,
-                                                color: Colors.white,
+                                                        .virtualVideoVolume =
+                                                    audioProvider
+                                                                .virtualVideoVolume !=
+                                                            0.0
+                                                        ? 0.0
+                                                        : 1.0;
+                                                _videoEditorController.video
+                                                    .setVolume(audioProvider
+                                                        .virtualVideoVolume);
+                                              },
+                                              padding: EdgeInsets.zero,
+                                              icon: CircleAvatar(
+                                                radius: 40,
+                                                backgroundColor:
+                                                    Colors.grey[600],
+                                                child: Icon(
+                                                  audioProvider
+                                                              .virtualVideoVolume !=
+                                                          0.0
+                                                      ? Icons.volume_up_rounded
+                                                      : Icons
+                                                          .volume_off_rounded,
+                                                  color: Colors.white,
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          Expanded(
-                                            child: Slider(
-                                              value: audioProvider
-                                                  .virtualAudioVolume,
-                                              onChanged: (value) {
+                                            Expanded(
+                                              child: Slider(
+                                                value: audioProvider
+                                                    .virtualVideoVolume,
+                                                onChanged: (value) {
+                                                  audioProvider
+                                                          .virtualVideoVolume =
+                                                      value;
+                                                  _videoEditorController.video
+                                                      .setVolume(value);
+                                                },
+                                              ),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
                                                 audioProvider
-                                                    .virtualAudioVolume = value;
+                                                        .virtualVideoVolume =
+                                                    audioProvider
+                                                                .virtualVideoVolume !=
+                                                            0.0
+                                                        ? 0.0
+                                                        : 1.0;
+                                                _videoEditorController.video
+                                                    .setVolume(audioProvider
+                                                        .virtualVideoVolume);
                                               },
+                                              child: Text(audioProvider
+                                                          .virtualVideoVolume !=
+                                                      0.0
+                                                  ? 'Mute'
+                                                  : 'Un Mute'),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 20),
+                                        if (audioProvider
+                                                .virtualSelectedAudio !=
+                                            null)
+
+                                          ///Audio volume Slider
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              const Text(
+                                                'External Audio',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 18,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 10),
+                                              Row(
+                                                children: [
+                                                  IconButton(
+                                                    onPressed: () {
+                                                      audioProvider
+                                                              .virtualAudioVolume =
+                                                          audioProvider
+                                                                      .virtualAudioVolume !=
+                                                                  0.0
+                                                              ? 0.0
+                                                              : 1.0;
+                                                    },
+                                                    padding: EdgeInsets.zero,
+                                                    icon: CircleAvatar(
+                                                      radius: 40,
+                                                      backgroundColor:
+                                                          Colors.grey[600],
+                                                      child: Icon(
+                                                        audioProvider
+                                                                    .virtualAudioVolume !=
+                                                                0.0
+                                                            ? Icons
+                                                                .volume_up_rounded
+                                                            : Icons
+                                                                .volume_off_rounded,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Expanded(
+                                                    child: Slider(
+                                                      value: audioProvider
+                                                          .virtualAudioVolume,
+                                                      onChanged: (value) {
+                                                        audioProvider
+                                                                .virtualAudioVolume =
+                                                            value;
+                                                      },
+                                                    ),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      audioProvider
+                                                              .virtualSelectedAudio =
+                                                          null;
+                                                    },
+                                                    child: const Text('Remove'),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          )
+                                        else ...[
+                                          ElevatedButton.icon(
+                                            style: ElevatedButton.styleFrom(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              fixedSize: Size(
+                                                screenUtil.screenWidth,
+                                                110.h,
+                                              ),
+                                            ),
+                                            onPressed: () async {
+                                              final success =
+                                                  await audioProvider.pickAudio(
+                                                currentPosition:
+                                                    _videoEditorController
+                                                        .endTrim,
+                                                maxDuration:
+                                                    _videoEditorController
+                                                            .endTrim.inSeconds -
+                                                        _videoEditorController
+                                                            .startTrim
+                                                            .inSeconds,
+                                              );
+                                              if (success) {
+                                                controlNotifier
+                                                    .isManagingAudio = false;
+                                              }
+                                            },
+                                            icon: const Icon(
+                                              Icons.music_note_rounded,
+                                              color: Colors.white,
+                                            ),
+                                            label: const Text(
+                                              'Add Audio',
                                             ),
                                           ),
-                                          TextButton(
-                                            onPressed: () {
-                                              audioProvider
-                                                  .virtualSelectedAudio = null;
+                                          const SizedBox(height: 10),
+                                          ElevatedButton.icon(
+                                            style: ElevatedButton.styleFrom(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              fixedSize: Size(
+                                                screenUtil.screenWidth,
+                                                110.h,
+                                              ),
+                                            ),
+                                            onPressed: () async {
+                                              audioProvider.preparingRecording =
+                                                  true;
                                             },
-                                            child: const Text('Remove'),
+                                            icon: const Icon(
+                                              Icons.mic_rounded,
+                                              color: Colors.white,
+                                            ),
+                                            label: const Text(
+                                              'Record Voice',
+                                            ),
                                           ),
                                         ],
-                                      ),
-                                    ],
-                                  )
-                                else
-                                  ElevatedButton.icon(
-                                    style: ElevatedButton.styleFrom(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      fixedSize: Size(
-                                        screenUtil.screenWidth,
-                                        55,
-                                      ),
+                                      ],
                                     ),
-                                    onPressed: () async {
-                                      final success =
-                                          await audioProvider.pickAudio(
-                                        currentPosition:
-                                            _videoEditorController.endTrim,
-                                        maxDuration: _videoEditorController
-                                                .endTrim.inSeconds -
-                                            _videoEditorController
-                                                .startTrim.inSeconds,
-                                      );
-                                      if (success) {
-                                        controlNotifier.isManagingAudio = false;
-                                      }
-                                    },
-                                    icon: const Icon(
-                                      Icons.music_note_rounded,
-                                      color: Colors.white,
-                                    ),
-                                    label: const Text(
-                                      'Add Audio',
-                                    ),
-                                  ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ],
@@ -796,14 +982,16 @@ class _MainViewState extends State<MainView> {
       final isYes = await (widget.onBackPress ??
           exitDialog(context: context, contentKey: contentKey));
       if (isYes) {
-        await _videoEditorController.dispose();
-        await Provider.of<AudioNotifier>(context, listen: false)
-            .player
-            .dispose();
+        await disposeControllers();
       }
       return isYes;
     }
     return false;
+  }
+
+  Future<void> disposeControllers() async {
+    await _videoEditorController.dispose();
+    await Provider.of<AudioNotifier>(context, listen: false).player.dispose();
   }
 
   /// start item scale

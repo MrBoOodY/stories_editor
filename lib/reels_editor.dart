@@ -18,6 +18,8 @@ import 'package:reels_editor/src/presentation/main_view/main_view.dart';
 import 'package:reels_editor/src/presentation/utils/constants/app_enums.dart';
 
 export 'package:reels_editor/reels_editor.dart';
+export 'package:reels_editor/src/presentation/utils/constants/app_enums.dart'
+    show EditorType;
 
 class StoriesEditor extends StatefulWidget {
   /// editor custom font families
