@@ -5,7 +5,6 @@ import 'package:reels_editor/src/domain/models/editable_items.dart';
 import 'package:reels_editor/src/domain/providers/notifiers/control_provider.dart';
 import 'package:reels_editor/src/domain/providers/notifiers/draggable_widget_notifier.dart';
 import 'package:reels_editor/src/domain/providers/notifiers/text_editing_notifier.dart';
-import 'package:reels_editor/src/presentation/text_editor_view/widgets/animation_selector.dart';
 import 'package:reels_editor/src/presentation/text_editor_view/widgets/font_selector.dart';
 import 'package:reels_editor/src/presentation/text_editor_view/widgets/text_field_widget.dart';
 import 'package:reels_editor/src/presentation/text_editor_view/widgets/top_text_tools.dart';
@@ -85,8 +84,7 @@ class _TextEditorState extends State<TextEditor> {
                         Align(
                           alignment: Alignment.bottomCenter,
                           child: Visibility(
-                            visible: editorNotifier.isFontFamily &&
-                                !editorNotifier.isTextAnimation,
+                            visible: editorNotifier.isFontFamily,
                             child: const Align(
                               alignment: Alignment.bottomCenter,
                               child: Padding(
@@ -101,27 +99,12 @@ class _TextEditorState extends State<TextEditor> {
                         Align(
                           alignment: Alignment.bottomCenter,
                           child: Visibility(
-                              visible: !editorNotifier.isFontFamily &&
-                                  !editorNotifier.isTextAnimation,
+                              visible: !editorNotifier.isFontFamily,
                               child: const Align(
                                 alignment: Alignment.bottomCenter,
                                 child: Padding(
                                   padding: EdgeInsets.only(bottom: 20),
                                   child: ColorSelector(),
-                                ),
-                              )),
-                        ),
-
-                        /// font animation selector (bottom
-                        Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Visibility(
-                              visible: editorNotifier.isTextAnimation,
-                              child: const Align(
-                                alignment: Alignment.bottomCenter,
-                                child: Padding(
-                                  padding: EdgeInsets.only(bottom: 20),
-                                  child: AnimationSelector(),
                                 ),
                               )),
                         ),
@@ -160,11 +143,8 @@ class _TextEditorState extends State<TextEditor> {
         ..textColor = controlNotifier.colorList![editorNotifier.textColor]
         ..fontFamily = editorNotifier.fontFamilyIndex
         ..fontSize = editorNotifier.textSize
-        ..fontAnimationIndex = editorNotifier.fontAnimationIndex
         ..textAlign = editorNotifier.textAlign
         ..textList = editorNotifier.textList
-        ..animationType =
-            editorNotifier.animationList[editorNotifier.fontAnimationIndex]
         ..position = const Offset(0.0, 0.0));
       editorNotifier.setDefaults();
       controlNotifier.isTextEditing = !controlNotifier.isTextEditing;

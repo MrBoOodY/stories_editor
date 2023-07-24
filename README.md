@@ -22,19 +22,11 @@ This is a package created in the style of the instagram story creator, with whic
 
 [✔️] Custom colors, gradients and font families
 
-[✔️] Custom gallery picker (own package => [gallery_media_picker](https://pub.dev/packages/gallery_media_picker))
-
-[✔️] Save draft as image
-
-[✔️] Get draft local path uri
-
-[✔️] Text animations => [animated_text_kit](https://pub.dev/packages/animated_text_kit)
+[✔️] Generate the edited Video or image 
 
 ## Future features
 
-[❌] Save draft as a gif / video
-
-[❌] Color filters
+[❌] Save draft
 
 
 ## Demo

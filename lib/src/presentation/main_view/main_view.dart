@@ -699,7 +699,15 @@ class _MainViewState extends State<MainView> {
                                                         },
                                                       );
                                                     } else {
-                                                      return const SizedBox();
+                                                      return TextButton(
+                                                        child: const Text(
+                                                            'Cancel'),
+                                                        onPressed: () {
+                                                          audioProvider
+                                                                  .preparingRecording =
+                                                              false;
+                                                        },
+                                                      );
                                                     }
                                                   } else {
                                                     return const SizedBox();
@@ -1000,7 +1008,8 @@ class _MainViewState extends State<MainView> {
 
   Future<void> disposeControllers() async {
     await _videoEditorController.dispose();
-    await Provider.of<AudioNotifier>(context, listen: false).player.dispose();
+    await Provider.of<AudioNotifier>(context, listen: false)
+        .disposeControllers();
   }
 
   /// start item scale

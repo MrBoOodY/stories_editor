@@ -185,4 +185,9 @@ class AudioNotifier extends ChangeNotifier {
     virtualSelectedAudio = null;
     notifyListeners();
   }
+
+  disposeControllers() {
+    player.dispose();
+    record.dispose();
+  }
 }

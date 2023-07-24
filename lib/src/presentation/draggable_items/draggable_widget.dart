@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:align_positioned/align_positioned.dart';
-import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:modal_gif_picker/modal_gif_picker.dart';
@@ -171,51 +170,12 @@ class DraggableWidget extends StatelessWidget {
       {required ControlNotifier controlNotifier,
       required PaintingStyle paintingStyle,
       bool background = false}) {
-    if (draggableWidget.animationType == TextAnimationType.none) {
-      return Text(draggableWidget.text,
-          textAlign: draggableWidget.textAlign,
-          style: _textStyle(
-              controlNotifier: controlNotifier,
-              paintingStyle: paintingStyle,
-              background: background));
-    } else {
-      return DefaultTextStyle(
+    return Text(draggableWidget.text,
+        textAlign: draggableWidget.textAlign,
         style: _textStyle(
             controlNotifier: controlNotifier,
             paintingStyle: paintingStyle,
-            background: background),
-        child: AnimatedTextKit(
-          repeatForever: true,
-          onTap: () => _onTap(context, draggableWidget, controlNotifier),
-          animatedTexts: [
-            if (draggableWidget.animationType == TextAnimationType.scale)
-              ScaleAnimatedText(draggableWidget.text,
-                  duration: const Duration(milliseconds: 1200)),
-            if (draggableWidget.animationType == TextAnimationType.fade)
-              ...draggableWidget.textList.map((item) => FadeAnimatedText(item,
-                  duration: const Duration(milliseconds: 1200))),
-            if (draggableWidget.animationType == TextAnimationType.typer)
-              TyperAnimatedText(draggableWidget.text,
-                  speed: const Duration(milliseconds: 500)),
-            if (draggableWidget.animationType == TextAnimationType.typeWriter)
-              TypewriterAnimatedText(
-                draggableWidget.text,
-                speed: const Duration(milliseconds: 500),
-              ),
-            if (draggableWidget.animationType == TextAnimationType.wavy)
-              WavyAnimatedText(
-                draggableWidget.text,
-                speed: const Duration(milliseconds: 500),
-              ),
-            if (draggableWidget.animationType == TextAnimationType.flicker)
-              FlickerAnimatedText(
-                draggableWidget.text,
-                speed: const Duration(milliseconds: 1200),
-              ),
-          ],
-        ),
-      );
-    }
+            background: background));
   }
 
   _textStyle(
@@ -287,9 +247,7 @@ class DraggableWidget extends StatelessWidget {
     _editorProvider.textAlign = item.textAlign;
     _editorProvider.textColor =
         controlNotifier.colorList!.indexOf(item.textColor);
-    _editorProvider.animationType = item.animationType;
     _editorProvider.textList = item.textList;
-    _editorProvider.fontAnimationIndex = item.fontAnimationIndex;
     _itemProvider.draggableWidget
         .removeAt(_itemProvider.draggableWidget.indexOf(item));
     _editorProvider.fontFamilyController = PageController(
