@@ -522,13 +522,15 @@ class _MainViewState extends State<MainView> {
                                 onPressed: () {
                                   controlNotifier.isManagingAudio = false;
                                   audioProvider.cancelEditing(
-                                    currentPosition: Duration(
-                                      seconds: _videoEditorController
-                                              .endTrim.inSeconds -
-                                          _videoEditorController
-                                              .videoPosition.inSeconds,
-                                    ),
+                                    currentPosition:
+                                        _videoEditorController.videoPosition,
+                                    maxDuration: _videoEditorController
+                                            .endTrim.inSeconds -
+                                        _videoEditorController
+                                            .startTrim.inSeconds,
                                   );
+                                  _videoEditorController.video.setVolume(
+                                      audioProvider.actualVideoVolume);
                                 },
                                 child: const Text(
                                   'Cancel',
@@ -668,7 +670,7 @@ class _MainViewState extends State<MainView> {
                                                               .playRecordedAudio(
                                                             currentPosition:
                                                                 _videoEditorController
-                                                                    .endTrim,
+                                                                    .videoPosition,
                                                             maxDuration: _videoEditorController
                                                                     .endTrim
                                                                     .inSeconds -
@@ -678,6 +680,11 @@ class _MainViewState extends State<MainView> {
                                                           );
                                                           audioProvider
                                                               .submit();
+                                                          _videoEditorController
+                                                              .video
+                                                              .setVolume(
+                                                                  audioProvider
+                                                                      .actualVideoVolume);
                                                         },
                                                       );
                                                     } else if (isRecording
@@ -874,7 +881,7 @@ class _MainViewState extends State<MainView> {
                                                   await audioProvider.pickAudio(
                                                 currentPosition:
                                                     _videoEditorController
-                                                        .endTrim,
+                                                        .videoPosition,
                                                 maxDuration:
                                                     _videoEditorController
                                                             .endTrim.inSeconds -
@@ -908,6 +915,8 @@ class _MainViewState extends State<MainView> {
                                               ),
                                             ),
                                             onPressed: () async {
+                                              _videoEditorController.video
+                                                  .setVolume(0);
                                               audioProvider.preparingRecording =
                                                   true;
                                             },

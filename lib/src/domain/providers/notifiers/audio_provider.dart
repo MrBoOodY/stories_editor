@@ -87,13 +87,16 @@ class AudioNotifier extends ChangeNotifier {
     return false;
   }
 
-  cancelEditing({required Duration currentPosition}) {
+  cancelEditing({required int maxDuration, required Duration currentPosition}) {
     virtualAudioVolume = actualAudioVolume;
     virtualVideoVolume = actualVideoVolume;
     virtualSelectedAudio = actualSelectedAudio;
+    preparingRecording = false;
     if (actualSelectedAudio != null) {
-      player.resume();
+      _playAudio(maxDuration, currentPosition);
       player.seek(currentPosition);
+    } else {
+      player.pause();
     }
   }
 
@@ -101,6 +104,7 @@ class AudioNotifier extends ChangeNotifier {
     actualAudioVolume = virtualAudioVolume;
     actualVideoVolume = virtualVideoVolume;
     actualSelectedAudio = virtualSelectedAudio;
+    preparingRecording = false;
     if (actualSelectedAudio == null) {
       player.pause();
     }

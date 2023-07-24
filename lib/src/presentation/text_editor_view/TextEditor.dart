@@ -74,13 +74,16 @@ class _TextEditorState extends State<TextEditor> {
                               alignment: Alignment.topCenter,
                               child: TopTextTools(
                                 onDone: () => _onTap(
-                                    context, controlNotifier, editorNotifier),
+                                  context,
+                                  controlNotifier,
+                                  editorNotifier,
+                                ),
                               )),
                         ),
 
                         /// font family selector (bottom)
-                        Positioned(
-                          bottom: screenUtil.screenHeight * 0.21,
+                        Align(
+                          alignment: Alignment.bottomCenter,
                           child: Visibility(
                             visible: editorNotifier.isFontFamily &&
                                 !editorNotifier.isTextAnimation,
@@ -95,8 +98,8 @@ class _TextEditorState extends State<TextEditor> {
                         ),
 
                         /// font color selector (bottom)
-                        Positioned(
-                          bottom: screenUtil.screenHeight * 0.21,
+                        Align(
+                          alignment: Alignment.bottomCenter,
                           child: Visibility(
                               visible: !editorNotifier.isFontFamily &&
                                   !editorNotifier.isTextAnimation,
@@ -110,8 +113,8 @@ class _TextEditorState extends State<TextEditor> {
                         ),
 
                         /// font animation selector (bottom
-                        Positioned(
-                          bottom: screenUtil.screenHeight * 0.21,
+                        Align(
+                          alignment: Alignment.bottomCenter,
                           child: Visibility(
                               visible: editorNotifier.isTextAnimation,
                               child: const Align(

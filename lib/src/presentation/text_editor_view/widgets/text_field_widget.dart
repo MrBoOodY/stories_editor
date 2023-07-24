@@ -26,6 +26,12 @@ class TextFieldWidget extends StatelessWidget {
                 child: Stack(
               alignment: Alignment.center,
               children: [
+                _textField(
+                  editorNotifier: editorNotifier,
+                  textNode: _textNode,
+                  controlNotifier: controlNotifier,
+                  paintingStyle: PaintingStyle.stroke,
+                ),
                 Padding(
                   padding: const EdgeInsets.only(right: 2),
                   child: _text(
@@ -35,12 +41,6 @@ class TextFieldWidget extends StatelessWidget {
                     paintingStyle: PaintingStyle.fill,
                   ),
                 ),
-                _textField(
-                  editorNotifier: editorNotifier,
-                  textNode: _textNode,
-                  controlNotifier: controlNotifier,
-                  paintingStyle: PaintingStyle.stroke,
-                )
               ],
             )),
           ),
