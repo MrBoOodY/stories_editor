@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:reels_editor/src/domain/providers/notifiers/text_editing_notifier.dart';
-import 'package:reels_editor/src/presentation/widgets/tool_button.dart';
+import 'package:reels_editor/src/presentation/widgets/bar_button.dart';
 
 class TopTextTools extends StatelessWidget {
   final void Function() onDone;
@@ -20,7 +20,7 @@ class TopTextTools extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   /// font family / font color
-                  ToolButton(
+                  BarButton(
                     onTap: () {
                       editorNotifier.isFontFamily =
                           !editorNotifier.isFontFamily;
@@ -49,7 +49,7 @@ class TopTextTools extends StatelessWidget {
                   ),
 
                   /// text align
-                  ToolButton(
+                  BarButton(
                     onTap: editorNotifier.onAlignmentChange,
                     child: Transform.scale(
                         scale: 0.8,
@@ -64,7 +64,7 @@ class TopTextTools extends StatelessWidget {
                   ),
 
                   /// background color
-                  ToolButton(
+                  BarButton(
                     onTap: editorNotifier.onBackGroundChange,
                     child: Transform.scale(
                         scale: 0.7,

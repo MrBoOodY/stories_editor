@@ -15,7 +15,7 @@ import 'package:reels_editor/src/domain/providers/notifiers/audio_provider.dart'
 import 'package:reels_editor/src/domain/providers/notifiers/control_provider.dart';
 import 'package:reels_editor/src/domain/providers/notifiers/draggable_widget_notifier.dart';
 import 'package:reels_editor/src/domain/providers/notifiers/painting_notifier.dart';
-import 'package:reels_editor/src/presentation/bar_tools/top_tools.dart';
+import 'package:reels_editor/src/presentation/bar_tools/bar_tools.dart';
 import 'package:reels_editor/src/presentation/draggable_items/delete_item.dart';
 import 'package:reels_editor/src/presentation/draggable_items/draggable_widget.dart';
 import 'package:reels_editor/src/presentation/painting_view/painting.dart';
@@ -24,7 +24,7 @@ import 'package:reels_editor/src/presentation/text_editor_view/TextEditor.dart';
 import 'package:reels_editor/src/presentation/utils/constants/app_enums.dart';
 import 'package:reels_editor/src/presentation/utils/constants/filter_constants.dart';
 import 'package:reels_editor/src/presentation/utils/modal_sheets.dart';
-import 'package:reels_editor/src/presentation/widgets/tool_button.dart';
+import 'package:reels_editor/src/presentation/widgets/bar_button.dart';
 import 'package:video_editor/video_editor.dart';
 
 class MainView extends StatefulWidget {
@@ -167,129 +167,124 @@ class _MainViewState extends State<MainView> {
                         borderRadius: BorderRadius.circular(25),
                         child: SizedBox(
                           width: screenUtil.screenWidth,
-                          child: RepaintBoundary(
-                            key: contentKey,
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 200),
-                              decoration: BoxDecoration(
-                                gradient: controlNotifier.editorType ==
-                                        EditorType.text
-                                    ? LinearGradient(
-                                        colors: controlNotifier.gradientColors![
-                                            controlNotifier.gradientIndex],
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                      )
-                                    : null,
-                              ),
-                              child: GestureDetector(
-                                onScaleStart: _onScaleStart,
-                                onScaleUpdate: _onScaleUpdate,
-                                child: Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    /// Video Widget if Set
-                                    if (widget.editorType == EditorType.video)
-                                      ColorFiltered(
-                                        colorFilter: ColorFilter.matrix(
-                                          FilterConstants.filters[
-                                              controlNotifier.filterIndex],
-                                        ),
-                                        child: IgnorePointer(
-                                          ignoring: true,
-                                          child: CropGridViewer.preview(
-                                            controller: _videoEditorController,
-                                          ),
-                                        ),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            decoration: BoxDecoration(
+                              gradient: controlNotifier.editorType ==
+                                      EditorType.text
+                                  ? LinearGradient(
+                                      colors: controlNotifier.gradientColors![
+                                          controlNotifier.gradientIndex],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    )
+                                  : null,
+                            ),
+                            child: GestureDetector(
+                              onScaleStart: _onScaleStart,
+                              onScaleUpdate: _onScaleUpdate,
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  /// Video Widget if Set
+                                  if (widget.editorType == EditorType.video)
+                                    ColorFiltered(
+                                      colorFilter: ColorFilter.matrix(
+                                        FilterConstants.filters[
+                                            controlNotifier.filterIndex],
                                       ),
-
-                                    /// in this case photo view works as a main background container to manage
-                                    /// the gestures of all movable items.
-                                    PhotoView.customChild(
-                                      child: const SizedBox(
-                                        height: double.infinity,
-                                        width: double.infinity,
-                                      ),
-                                      backgroundDecoration: const BoxDecoration(
-                                        color: Colors.transparent,
+                                      child: IgnorePointer(
+                                        ignoring: true,
+                                        child: CropGridViewer.preview(
+                                          controller: _videoEditorController,
+                                        ),
                                       ),
                                     ),
 
-                                    Consumer<DraggableWidgetNotifier>(builder:
-                                        (context, itemProvider, child) {
-                                      ///list items
-                                      return AspectRatio(
-                                        aspectRatio: _videoEditorController
-                                            .video.value.aspectRatio,
-                                        child: Stack(
-                                          children: [
-                                            ...itemProvider.draggableWidget
-                                                .map((editableItem) {
-                                              return DraggableWidget(
-                                                context: context,
-                                                draggableWidget: editableItem,
-                                                onPointerDown: (details) {
-                                                  _updateItemPosition(
-                                                    editableItem,
-                                                    details,
-                                                  );
-                                                },
-                                                onPointerUp: (details) {
-                                                  _deleteItemOnCoordinates(
-                                                    editableItem,
-                                                    details,
-                                                  );
-                                                },
-                                                onPointerMove: (details) {
-                                                  _deletePosition(
-                                                    editableItem,
-                                                    details,
-                                                  );
-                                                },
-                                              );
-                                            }),
-                                          ],
-                                        ),
-                                      );
-                                    }),
+                                  /// in this case photo view works as a main background container to manage
+                                  /// the gestures of all movable items.
+                                  PhotoView.customChild(
+                                    child: const SizedBox(
+                                      height: double.infinity,
+                                      width: double.infinity,
+                                    ),
+                                    backgroundDecoration: const BoxDecoration(
+                                      color: Colors.transparent,
+                                    ),
+                                  ),
 
-                                    /// finger paint
-                                    Consumer<PaintingNotifier>(builder:
-                                        (context, paintingProvider, _) {
-                                      return IgnorePointer(
-                                        ignoring: true,
+                                  Consumer<DraggableWidgetNotifier>(
+                                      builder: (context, itemProvider, child) {
+                                    ///list items
+                                    return Stack(
+                                      children: [
+                                        ...itemProvider.draggableWidget
+                                            .map((editableItem) {
+                                          return DraggableWidget(
+                                            context: context,
+                                            draggableWidget: editableItem,
+                                            onPointerDown: (details) {
+                                              _updateItemPosition(
+                                                editableItem,
+                                                details,
+                                              );
+                                            },
+                                            onPointerUp: (details) {
+                                              _deleteItemOnCoordinates(
+                                                editableItem,
+                                                details,
+                                              );
+                                            },
+                                            onPointerMove: (details) {
+                                              _deletePosition(
+                                                editableItem,
+                                                details,
+                                              );
+                                            },
+                                          );
+                                        }),
+                                      ],
+                                    );
+                                  }),
+
+                                  /// finger paint
+                                  Consumer<PaintingNotifier>(
+                                      builder: (context, paintingProvider, _) {
+                                    return IgnorePointer(
+                                      ignoring: true,
+                                      child: RepaintBoundary(
+                                        key: contentKey,
                                         child: Align(
                                           alignment: Alignment.topCenter,
                                           child: Container(
                                             decoration: BoxDecoration(
+                                              color: Colors.black,
                                               borderRadius:
                                                   BorderRadius.circular(25),
                                             ),
-                                            child: RepaintBoundary(
-                                              child: SizedBox(
-                                                width: screenUtil.screenWidth,
-                                                child: StreamBuilder<
-                                                    List<PaintingModel>>(
-                                                  stream: paintingProvider
-                                                      .linesStreamController
-                                                      .stream,
-                                                  builder: (context, snapshot) {
-                                                    return CustomPaint(
-                                                      painter: Sketcher(
-                                                        lines: paintingProvider
-                                                            .lines,
-                                                      ),
-                                                    );
-                                                  },
-                                                ),
+                                            child: SizedBox(
+                                              width: screenUtil.screenWidth,
+                                              child: StreamBuilder<
+                                                  List<PaintingModel>>(
+                                                stream: paintingProvider
+                                                    .linesStreamController
+                                                    .stream,
+                                                builder: (context, snapshot) {
+                                                  return CustomPaint(
+                                                    painter: Sketcher(
+                                                      lines: paintingProvider
+                                                          .lines,
+                                                    ),
+                                                  );
+                                                },
                                               ),
                                             ),
                                           ),
                                         ),
-                                      );
-                                    }),
-                                  ],
-                                ),
+                                      ),
+                                    );
+                                  }),
+                                ],
                               ),
                             ),
                           ),
@@ -298,7 +293,7 @@ class _MainViewState extends State<MainView> {
                     ),
                   ),
 
-                  /// top tools
+                  /// bar tools
                   Visibility(
                     visible: !controlNotifier.isTextEditing &&
                         !controlNotifier.isPainting &&
@@ -313,7 +308,7 @@ class _MainViewState extends State<MainView> {
                           child:
 
                               /// close button
-                              ToolButton(
+                              BarButton(
                                   child: const Icon(
                                     Icons.close,
                                     color: Colors.white,
@@ -321,8 +316,8 @@ class _MainViewState extends State<MainView> {
                                   backGroundColor: Colors.black12,
                                   onTap: () async {
                                     var res = await exitDialog(
-                                        context: context,
-                                        contentKey: contentKey);
+                                      context: context,
+                                    );
                                     if (res) {
                                       disposeControllers();
                                       Navigator.pop(context);
@@ -331,13 +326,52 @@ class _MainViewState extends State<MainView> {
                         ),
                         Align(
                             alignment: AlignmentDirectional.topEnd,
-                            child: TopTools(
+                            child: BarTools(
                               contentKey: contentKey,
                               context: context,
                             )),
                       ],
                     ),
                   ),
+
+                  /// top tools
+                  Visibility(
+                      visible: !controlNotifier.isTextEditing &&
+                          !controlNotifier.isPainting &&
+                          !controlNotifier.isEffecting &&
+                          !controlNotifier.isManagingAudio &&
+                          !controlNotifier.isTrimming,
+                      child: Align(
+                        alignment: AlignmentDirectional.bottomEnd,
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              controlNotifier.shareFile(
+                                context: context,
+                                editorType: widget.editorType,
+                                paintKey: contentKey,
+                                controller:
+                                    widget.editorType != EditorType.video
+                                        ? null
+                                        : _videoEditorController,
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              fixedSize: Size(
+                                screenUtil.screenWidth * 0.3,
+                                110.h,
+                              ),
+                            ),
+                            child: const Text(
+                              'Share',
+                            ),
+                          ),
+                        ),
+                      )),
 
                   /// trim event
                   Visibility(
@@ -968,6 +1002,22 @@ class _MainViewState extends State<MainView> {
                     visible: controlNotifier.isPainting,
                     child: const Painting(),
                   ),
+
+                  Visibility(
+                    visible: controlNotifier.isFfmpegInProgress,
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: double.infinity,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.5),
+                        ),
+                        child: const Center(
+                          child: CircularProgressIndicator.adaptive(),
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             );
@@ -996,8 +1046,7 @@ class _MainViewState extends State<MainView> {
 
     /// show close dialog
     else if (!controlNotifier.isTextEditing && !controlNotifier.isPainting) {
-      final isYes = await (widget.onBackPress ??
-          exitDialog(context: context, contentKey: contentKey));
+      final isYes = await (widget.onBackPress ?? exitDialog(context: context));
       if (isYes) {
         await disposeControllers();
       }

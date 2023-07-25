@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:reels_editor/src/presentation/widgets/animated_onTap_button.dart';
 
-class ToolButton extends StatelessWidget {
+class BarButton extends StatelessWidget {
   final Function() onTap;
   final Widget child;
   final Color? backGroundColor;
   final EdgeInsets? padding;
   final Function()? onLongPress;
   final Color colorBorder;
-  const ToolButton(
+  const BarButton(
       {Key? key,
       required this.onTap,
       required this.child,

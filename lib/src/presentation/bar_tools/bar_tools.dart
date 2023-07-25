@@ -7,19 +7,19 @@ import 'package:reels_editor/src/domain/providers/notifiers/painting_notifier.da
 import 'package:reels_editor/src/presentation/utils/constants/app_enums.dart';
 import 'package:reels_editor/src/presentation/utils/modal_sheets.dart';
 import 'package:reels_editor/src/presentation/widgets/animated_onTap_button.dart';
-import 'package:reels_editor/src/presentation/widgets/tool_button.dart';
+import 'package:reels_editor/src/presentation/widgets/bar_button.dart';
 
-class TopTools extends StatefulWidget {
+class BarTools extends StatefulWidget {
   final GlobalKey contentKey;
   final BuildContext context;
-  const TopTools({Key? key, required this.contentKey, required this.context})
+  const BarTools({Key? key, required this.contentKey, required this.context})
       : super(key: key);
 
   @override
-  _TopToolsState createState() => _TopToolsState();
+  _BarToolsState createState() => _BarToolsState();
 }
 
-class _TopToolsState extends State<TopTools> {
+class _BarToolsState extends State<BarTools> {
   @override
   Widget build(BuildContext context) {
     return Consumer3<ControlNotifier, PaintingNotifier,
@@ -58,18 +58,13 @@ class _TopToolsState extends State<TopTools> {
                     onTap: () async {
                       if (paintingNotifier.lines.isNotEmpty ||
                           itemNotifier.draggableWidget.isNotEmpty) {
-                        var response = await takePicture(
+                        await takePicture(
                             contentKey: widget.contentKey,
                             context: context,
                             saveToGallery: true);
-                        if (response) {
-                          Fluttertoast.showToast(msg: 'Successfully saved');
-                        } else {
-                          Fluttertoast.showToast(msg: 'Error');
-                        }
                       }
                     }), */
-                ToolButton(
+                BarButton(
                     child: const ImageIcon(
                       AssetImage('assets/icons/stickers.png',
                           package: 'reels_editor'),
@@ -79,7 +74,7 @@ class _TopToolsState extends State<TopTools> {
                     backGroundColor: Colors.black12,
                     onTap: () => createGiphyItem(
                         context: context, giphyKey: controlNotifier.giphyKey)),
-                ToolButton(
+                BarButton(
                     child: const ImageIcon(
                       AssetImage('assets/icons/draw.png',
                           package: 'reels_editor'),
@@ -91,7 +86,7 @@ class _TopToolsState extends State<TopTools> {
                       controlNotifier.isPainting = true;
                       //createLinePainting(context: context);
                     }),
-                ToolButton(
+                BarButton(
                   child: ImageIcon(
                     const AssetImage('assets/icons/photo_filter.png',
                         package: 'reels_editor'),
@@ -106,7 +101,7 @@ class _TopToolsState extends State<TopTools> {
                   onTap: () => controlNotifier.isEffecting =
                       !controlNotifier.isEffecting,
                 ),
-                ToolButton(
+                BarButton(
                   child: const ImageIcon(
                     AssetImage('assets/icons/text.png',
                         package: 'reels_editor'),
@@ -117,7 +112,7 @@ class _TopToolsState extends State<TopTools> {
                   onTap: () => controlNotifier.isTextEditing =
                       !controlNotifier.isTextEditing,
                 ),
-                ToolButton(
+                BarButton(
                   child: const Icon(
                     Icons.content_cut,
                     color: Colors.white,
@@ -126,7 +121,7 @@ class _TopToolsState extends State<TopTools> {
                   backGroundColor: Colors.black12,
                   onTap: () => controlNotifier.isTrimming = true,
                 ),
-                ToolButton(
+                BarButton(
                   child: const Icon(
                     Icons.volume_down_rounded,
                     color: Colors.white,

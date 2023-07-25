@@ -37,7 +37,7 @@ Future createGiphyItem(
 }
 
 /// custom exit dialog
-Future<bool> exitDialog({required context, required contentKey}) async {
+Future<bool> exitDialog({required context}) async {
   return (await showDialog(
         context: context,
         barrierColor: Colors.black38,

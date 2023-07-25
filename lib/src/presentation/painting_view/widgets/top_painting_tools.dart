@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:reels_editor/src/domain/providers/notifiers/control_provider.dart';
 import 'package:reels_editor/src/domain/providers/notifiers/painting_notifier.dart';
 import 'package:reels_editor/src/presentation/utils/constants/app_enums.dart';
-import 'package:reels_editor/src/presentation/widgets/tool_button.dart';
+import 'package:reels_editor/src/presentation/widgets/bar_button.dart';
 
 class TopPaintingTools extends StatefulWidget {
   const TopPaintingTools({Key? key}) : super(key: key);
@@ -28,7 +28,7 @@ class _TopPaintingToolsState extends State<TopPaintingTools> {
               children: [
                 /// remove last line
                 if (paintingNotifier.lines.isNotEmpty)
-                  ToolButton(
+                  BarButton(
                     onTap: paintingNotifier.removeLast,
                     onLongPress: paintingNotifier.clearAll,
                     padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -43,7 +43,7 @@ class _TopPaintingToolsState extends State<TopPaintingTools> {
                   ),
 
                 /// select pen
-                ToolButton(
+                BarButton(
                   onTap: () {
                     paintingNotifier.paintingType = PaintingType.pen;
                   },
@@ -67,7 +67,7 @@ class _TopPaintingToolsState extends State<TopPaintingTools> {
                 ),
 
                 /// select marker
-                ToolButton(
+                BarButton(
                   onTap: () {
                     paintingNotifier.paintingType = PaintingType.marker;
                   },
@@ -93,7 +93,7 @@ class _TopPaintingToolsState extends State<TopPaintingTools> {
                 ),
 
                 /// select neon marker
-                ToolButton(
+                BarButton(
                   onTap: () {
                     paintingNotifier.paintingType = PaintingType.neon;
                   },
@@ -119,7 +119,7 @@ class _TopPaintingToolsState extends State<TopPaintingTools> {
                 ),
 
                 /// done button
-                ToolButton(
+                BarButton(
                   onTap: () {
                     controlNotifier.isPainting = !controlNotifier.isPainting;
                     paintingNotifier.resetDefaults();
